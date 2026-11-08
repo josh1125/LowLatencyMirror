@@ -16,7 +16,13 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x ./gradlew
-      - run: ./gradlew assembleDebug --no-daemon
+      - run: |
+          ok=0
+          for i in 1 2 3; do
+            ./gradlew assembleDebug --no-daemon && ok=1 && break
+            echo "Attempt $i failed, retrying..."; sleep 20
+          done
+          test $ok = 1
       - uses: actions/upload-artifact@v4
         with:
           name: apks
